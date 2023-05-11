@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main_navigation"
+    app:startDestination="@id/main">
+
+    <fragment
+        android:id="@+id/main"
+        android:name="com.example.echoPurse.fragments.MainFragment"
+        android:label="Головна сторінка"
+        tools:layout="@layout/fragment_main" >
+        <action
+            android:id="@+id/action_main_to_settings"
+            app:destination="@id/settings" />
+        <action
+            android:id="@+id/action_main_to_feedbackFragment"
+            app:destination="@id/feedback" />
+    </fragment>
+    <fragment
+        android:id="@+id/settings"
+        android:name="com.example.echoPurse.fragments.SettingsFragment"
+        android:label="Налаштування"
+        tools:layout="@layout/fragment_settings" >
+        <action
+            android:id="@+id/action_settings_to_main"
+            app:destination="@id/main" />
+    </fragment>
+    <fragment
+        android:id="@+id/feedback"
+        android:name="com.example.echoPurse.fragments.FeedbackFragment"
+        android:label="Звязок з розробником"
+        tools:layout="@layout/fragment_feedback" >
+        <action
+            android:id="@+id/action_feedbackFragment_to_settings"
+            app:destination="@id/settings" />
+        <action
+            android:id="@+id/action_feedbackFragment_to_main"
+            app:destination="@id/main" />
+    </fragment>
+</navigation>
