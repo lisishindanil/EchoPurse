@@ -1,12 +1,13 @@
 package com.example.echoPurse.ui.viewmodels
 
-import androidx.lifecycle.*
-import com.example.echoPurse.model.Transaction
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.viewModelScope
 import com.example.echoPurse.repositories.TransactionRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import java.util.Date
 
 class MainFragmentViewModel(private val repo: TransactionRepository) : ViewModel() {
 

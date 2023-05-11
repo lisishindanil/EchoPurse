@@ -26,9 +26,6 @@ interface TransactionDao {
     @Query("SELECT SUM(amount) FROM transactions WHERE type = 'Дохід'")
     fun  getSumAmountInc(): Double
 
-    @Query("SELECT * FROM transactions WHERE date(created) = date(:selectedDate) ORDER BY updated DESC")
-    fun getTransactionsByDate(selectedDate: Date): LiveData<List<Transaction>>
-
     @Query("DELETE FROM transactions")
     fun deleteAllTransaction()
 
