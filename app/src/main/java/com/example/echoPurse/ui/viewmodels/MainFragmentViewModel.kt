@@ -8,27 +8,27 @@ import com.example.echoPurse.repositories.TransactionRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.util.Date
 
 class MainFragmentViewModel(private val repo: TransactionRepository) : ViewModel() {
 
     val transaction = repo.transaction
-    val sumAmountExp = MutableLiveData<Double>(0.0)
-    val sumAmountInc = MutableLiveData<Double>(0.0)
+    val sumAmountIncByDate = MutableLiveData(0.0)
+    val sumAmountExpByDate = MutableLiveData(0.0)
 
-    fun getSumAmountExp() = viewModelScope.launch(Dispatchers.IO) {
-        val sumExp = repo.getSumAmountExp()
-        withContext(Dispatchers.Main) {
-            sumAmountExp.value = sumExp
-        }
+    fun getSumAmountExpByDate(startDate: Date, endDate: Date) = viewModelScope.launch {
+        val sumExpByDate = repo.getSumAmountExpByDateRange(startDate, endDate)
+        sumAmountExpByDate.value = sumExpByDate
     }
-    fun getSumAmountInc() = viewModelScope.launch(Dispatchers.IO) {
-        val sumInc = repo.getSumAmountInc()
-        withContext(Dispatchers.Main) {
-            sumAmountInc.value = sumInc
-        }
+
+    fun getSumAmountIncByDate(startDate: Date, endDate: Date) = viewModelScope.launch {
+        val sumIncByDate = repo.getSumAmountIncByDateRange(startDate, endDate)
+        sumAmountIncByDate.value = sumIncByDate
     }
-    fun deleteAllTransactions() = repo.deleteAllTransactions()
+
     fun deleteTransaction(id: Long) = repo.deleteTransaction(id)
+
+    fun getTransactionsByDateRange(startDate: Date, endDate: Date) = repo.getTransactionsByDateRange(startDate, endDate)
 
     class MainFragmentViewModelFactory(private val repo: TransactionRepository) : ViewModelProvider.Factory {
         override fun <T : ViewModel> create(modelClass: Class<T>): T {

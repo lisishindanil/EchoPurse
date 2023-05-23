@@ -14,6 +14,12 @@ import com.example.echoPurse.databinding.FragmentMainBinding
 import com.example.echoPurse.ui.TransactionActivity
 import com.example.echoPurse.ui.adapters.TransactionAdapter
 import com.example.echoPurse.ui.viewmodels.MainFragmentViewModel
+import com.google.android.material.datepicker.MaterialDatePicker
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import java.util.*
 
 class MainFragment : Fragment() {
 
@@ -46,10 +52,15 @@ class MainFragment : Fragment() {
             builder.setTitle("Дані про транзакцію")
             builder.setMessage(
                 "Cумa: ${it.amount}\n"
-                + "Категорія: ${it.category}\n"
-                + "Тип: ${it.type}\n"
-                + "Опис: ${it.description}"
+                        + "Категорія: ${it.category}\n"
+                        + "Тип: ${it.type}\n"
+                        + "Опис: ${it.description}"
             )
+            builder.setNeutralButton("Редагувати") {_, _ ->
+                val i = Intent(requireContext(), TransactionActivity::class.java)
+                i.putExtra("transaction_id", it.id)
+                startActivity(i)
+            }
             builder.setPositiveButton("Видалити") { _, _ ->
                 val builder2 = AlertDialog.Builder(requireContext())
                 builder2.setTitle("Видалення транзакції")
@@ -66,60 +77,68 @@ class MainFragment : Fragment() {
         }
         binding.list.adapter = adapter
 
+        fun showDatePicker() {
+            val datePicker = MaterialDatePicker.Builder.dateRangePicker().build()
+            datePicker.addOnPositiveButtonClickListener { selection ->
+                val startDate = Date(selection.first ?: 0)
+                val endDate = Date(selection.second ?: 0)
+
+                CoroutineScope(Dispatchers.IO).launch {
+                    val transactions = viewModel.getTransactionsByDateRange(startDate, endDate)
+
+                    withContext(Dispatchers.Main) {
+                        adapter.submitList(transactions)
+                        viewModel.getSumAmountExpByDate(startDate, endDate)
+                        viewModel.getSumAmountIncByDate(startDate, endDate)
+                        updateTv()
+                    }
+                }
+            }
+            datePicker.show(parentFragmentManager, "datePicker")
+        }
+
+        binding.analyticBtn.setOnClickListener {
+            showDatePicker()
+        }
+
         viewModel.transaction.observe(viewLifecycleOwner) {
             adapter.submitList(it)
-            viewModel.getSumAmountInc()
-            viewModel.getSumAmountExp()
+            val (startDate, endDate) = getStartAndEndOfMonth()
+            viewModel.getSumAmountIncByDate(startDate, endDate)
+            viewModel.getSumAmountExpByDate(startDate, endDate)
             updateTv()
         }
-
-        setHasOptionsMenu(true)
     }
 
-    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        inflater.inflate(R.menu.delete_menu, menu)
-    }
+    private fun getStartAndEndOfMonth(): Pair<Date, Date> {
+        val calendar = Calendar.getInstance()
 
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        if (item.itemId == R.id.menu_delete)
-            deleteAllTransactions()
-        return super.onOptionsItemSelected(item)
-    }
+        calendar.time = Date()
 
-    private fun deleteAllTransactions() {
-        val builder = AlertDialog.Builder(requireContext())
-        builder.setTitle("Повне очищення")
-        builder.setMessage("Ви точно хочете все видалити?")
-        builder.setPositiveButton("Так") { _, _ ->
-            viewModel.deleteAllTransactions()
-            Toast.makeText(requireContext(), "Транзакції успішно видалені", Toast.LENGTH_SHORT).show()
-        }
-        builder.setNegativeButton("Ні") { _, _ -> }
-        builder.create().show()
+        calendar.set(Calendar.DAY_OF_MONTH, 1)
+        calendar.set(Calendar.HOUR_OF_DAY, 0)
+        calendar.set(Calendar.MINUTE, 0)
+        calendar.set(Calendar.SECOND, 0)
+        val startOfMonth = calendar.time
+
+        calendar.add(Calendar.MONTH, 1)
+        calendar.add(Calendar.SECOND, -1)
+        val endOfMonth = calendar.time
+
+        return Pair(startOfMonth, endOfMonth)
     }
 
     private fun updateTv() {
-        viewModel.sumAmountExp.observe(viewLifecycleOwner) { expAmount ->
-            viewModel.sumAmountInc.observe(viewLifecycleOwner) { incAmount ->
-                viewModel.transaction.observe(viewLifecycleOwner) {
-                    val balance = incAmount?.minus(expAmount?: 0.0) ?: 0.0
-                    binding.expTV.text = expAmount.toString()
-                    binding.incTV.text = incAmount.toString()
-                    binding.balTV.text = balance.toString()
-                }
+        viewModel.sumAmountExpByDate.observe(viewLifecycleOwner) { expAmount ->
+            viewModel.sumAmountIncByDate.observe(viewLifecycleOwner) { incAmount ->
+                        val balance = (incAmount ?: 0.0) - (expAmount ?: 0.0)
+                        binding.expTV.text = expAmount.toString()
+                        binding.incTV.text = incAmount.toString()
+                        binding.balTV.text = balance.toString()
             }
         }
     }
 
-    override fun onResume() {
-        super.onResume()
-        updateTv()
-    }
-
-    override fun onStart() {
-        super.onStart()
-        updateTv()
-    }
 
     override fun onDestroyView() {
         super.onDestroyView()

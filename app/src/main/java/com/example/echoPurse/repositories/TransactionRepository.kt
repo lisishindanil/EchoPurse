@@ -4,6 +4,8 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.example.echoPurse.model.Transaction
 import com.example.echoPurse.room.TransactionDao
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import java.util.*
 
 class TransactionRepository(private val transactionDao: TransactionDao) {
@@ -11,10 +13,6 @@ class TransactionRepository(private val transactionDao: TransactionDao) {
     val transaction: LiveData<List<Transaction>> = transactionDao.getAllTransactions()
 
     fun addTransaction(transaction: Transaction) = Thread { transactionDao.insert(transaction) }.start()
-
-    fun getSumAmountExp(): Double = transactionDao.getSumAmountExp()
-
-    fun getSumAmountInc(): Double = transactionDao.getSumAmountInc()
 
     fun deleteAllTransactions() = Thread { transactionDao.deleteAllTransaction() }.start()
 
@@ -28,5 +26,18 @@ class TransactionRepository(private val transactionDao: TransactionDao) {
         }.start()
     }
 
+    fun getTransactionsByDateRange(startDate: Date, endDate: Date): List<Transaction> = transactionDao.getTransactionsByDateRange(startDate, endDate)
     fun updateTransaction(transaction: Transaction) = Thread { transactionDao.updateTransaction(transaction) }.start()
+
+    suspend fun getSumAmountExpByDateRange(startDate: Date, endDate: Date): Double {
+        return withContext(Dispatchers.IO) {
+            transactionDao.getSumAmountExpByDateRange(startDate, endDate)
+        }
+    }
+
+    suspend fun getSumAmountIncByDateRange(startDate: Date, endDate: Date): Double {
+        return withContext(Dispatchers.IO) {
+            transactionDao.getSumAmountIncByDateRange(startDate, endDate)
+        }
+    }
 }

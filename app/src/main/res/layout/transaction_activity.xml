@@ -23,7 +23,7 @@
             android:layout_width="match_parent"
             android:layout_height="50dp"
             android:gravity="center"
-            android:text="Нова транзакція"
+            android:text="Транзакція"
             android:textColor="#1C1C1C"
             android:textSize="20sp"
             android:textStyle="bold" />
@@ -95,8 +95,8 @@
         android:id="@+id/save"
         android:layout_width="150dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:layout_marginEnd="40dp"
+        android:layout_marginTop="24dp"
+        android:layout_marginEnd="32dp"
         android:text="Зберегти"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/radioGroup" />
@@ -105,8 +105,8 @@
         android:id="@+id/cancelBtn"
         android:layout_width="150dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="40dp"
-        android:layout_marginTop="16dp"
+        android:layout_marginStart="32dp"
+        android:layout_marginTop="24dp"
         android:text="Відминити"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/radioGroup" />
@@ -116,21 +116,34 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
+        android:orientation="horizontal"
         app:layout_constraintEnd_toEndOf="@+id/categoryEd"
         app:layout_constraintStart_toStartOf="@+id/categoryEd"
-        app:layout_constraintTop_toBottomOf="@+id/descriptionEd">
+        app:layout_constraintTop_toBottomOf="@+id/textView3">
 
         <RadioButton
             android:id="@+id/radioButtonExp"
-            android:layout_width="match_parent"
+            android:layout_width="100dp"
             android:layout_height="wrap_content"
             android:text="Витрата" />
 
         <RadioButton
             android:id="@+id/radioButtonInc"
-            android:layout_width="match_parent"
+            android:layout_width="100dp"
             android:layout_height="wrap_content"
             android:text="Дохід" />
     </RadioGroup>
+
+    <TextView
+        android:id="@+id/textView3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="24dp"
+        android:text="Оберіть вид транзакції"
+        android:textColor="@color/black"
+        android:textSize="16sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/descriptionEd" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

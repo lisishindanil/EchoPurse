@@ -20,15 +20,19 @@ interface TransactionDao {
     @Update
     fun updateTransaction(transaction: Transaction)
 
-    @Query("SELECT SUM(amount) FROM transactions WHERE type = 'Витрата'")
-    fun getSumAmountExp(): Double
-
-    @Query("SELECT SUM(amount) FROM transactions WHERE type = 'Дохід'")
-    fun  getSumAmountInc(): Double
-
     @Query("DELETE FROM transactions")
     fun deleteAllTransaction()
 
     @Query("DELETE FROM transactions WHERE id = :id")
     fun deleteTransaction(id: Long)
+
+    @Query("SELECT * FROM transactions WHERE created BETWEEN :startDate AND :endDate")
+    fun getTransactionsByDateRange(startDate: Date, endDate: Date): List<Transaction>
+
+    @Query("SELECT SUM(amount) FROM transactions WHERE type = 'Дохід' AND created >= :startDate AND created <= :endDate")
+    fun getSumAmountIncByDateRange(startDate: Date, endDate: Date): Double
+
+    @Query("SELECT SUM(amount) FROM transactions WHERE type = 'Витрата' AND created >= :startDate AND created <= :endDate")
+    fun getSumAmountExpByDateRange(startDate: Date, endDate: Date): Double
+
 }

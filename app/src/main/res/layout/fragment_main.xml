@@ -71,6 +71,16 @@
                 android:textSize="24sp"
                 android:textStyle="bold" />
 
+            <com.google.android.material.floatingactionbutton.FloatingActionButton
+                android:id="@+id/analyticBtn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center|right"
+                android:layout_marginRight="16dp"
+                android:backgroundTint="@color/teal_700"
+                android:contentDescription="datePicker"
+                android:src="@drawable/baseline_analytics_24" />
+
         </androidx.cardview.widget.CardView>
 
 
